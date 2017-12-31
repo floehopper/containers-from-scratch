@@ -28,7 +28,7 @@ end
 def child(*args)
   puts "child: Running #{args.inspect} as PID #{Process.pid}"
 
-  must(LibC.unshare(LibC::CLONE_NEWUTS | LibC::CLONE_NEWPID))
+  must(LibC.unshare(LibC::CLONE_NEWUTS | LibC::CLONE_NEWPID | LibC::CLONE_NEWNS))
   must(LibC.sethostname(HOSTNAME, HOSTNAME.length))
 
   process = ChildProcess.build(__FILE__, 'grandchild', *args)
@@ -42,6 +42,7 @@ end
 def grandchild(*args)
   puts "grandchild: Running #{args.inspect} as PID #{Process.pid}"
 
+  must(LibC.mount('none', '/', '', LibC::MS_REC | LibC::MS_PRIVATE, ''))
   Dir.chroot('/home/ubuntu/ubuntufs')
   must(LibC.mount('proc', '/proc', 'proc', 0, ''))
 

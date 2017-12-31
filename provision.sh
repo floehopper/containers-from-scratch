@@ -14,5 +14,6 @@ wget -q http://cdimage.ubuntu.com/ubuntu-base/releases/16.04/release/ubuntu-base
 tar xfz ubuntu-base-16.04-core-amd64.tar.gz
 rm ubuntu-base-16.04-core-amd64.tar.gz
 touch UBUNTU_CONTAINER_ROOT
+mkdir mytemp
 cd /vagrant
 bundle install
