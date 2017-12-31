@@ -6,7 +6,7 @@ require 'childprocess'
 def run(*args)
   puts "run: Running #{args.inspect} as PID #{Process.pid}"
 
-  process = ChildProcess.build(*args)
+  process = ChildProcess.build(__FILE__, 'child', *args)
   process.io.inherit!
   process.start
   process.wait
@@ -14,11 +14,24 @@ def run(*args)
   abort "run: exit code #{process.exit_code}" unless process.exit_code == 0
 end
 
+def child(*args)
+  puts "child: Running #{args.inspect} as PID #{Process.pid}"
+
+  process = ChildProcess.build(*args)
+  process.io.inherit!
+  process.start
+  process.wait
+
+  abort "child: exit code #{process.exit_code}" unless process.exit_code == 0
+end
+
 args = ARGV
 type = args.shift
 case type
 when 'run'
   run(*args)
+when 'child'
+  child(*args)
 else
   abort "Unknown type: #{type}"
 end
