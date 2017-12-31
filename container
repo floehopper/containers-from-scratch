@@ -42,8 +42,11 @@ end
 def grandchild(*args)
   puts "grandchild: Running #{args.inspect} as PID #{Process.pid}"
 
+  Dir.chroot('/home/ubuntu/ubuntufs')
+
   process = ChildProcess.build(*args)
   process.io.inherit!
+  process.cwd = '/'
   process.start
   process.wait
 
