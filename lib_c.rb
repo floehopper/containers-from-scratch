@@ -70,6 +70,9 @@ module LibC
   # Ref: http://manpages.ubuntu.com/manpages/xenial/man2/clone.2.html
   extern 'int clone(int (*fn)(void *), void *child_stack, int flags, void *arg)'
 
+  # Ref: http://manpages.ubuntu.com/manpages/xenial/man2/unshare.2.html
+  extern 'int unshare(int flags)'
+
   # Note that size_t is usually defined in stddef.h via stdlib.h
   # and is a recognized Fiddle type:
   #   require 'fiddle/cparser'

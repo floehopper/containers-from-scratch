@@ -3,6 +3,15 @@
 require 'bundler/setup'
 require 'childprocess'
 
+require_relative 'lib_c'
+
+def must(exit_code)
+  unless exit_code == 0
+    $stderr.puts caller
+    abort "exit code: #{exit_code}; errno: #{Fiddle.last_error}"
+  end
+end
+
 def run(*args)
   puts "run: Running #{args.inspect} as PID #{Process.pid}"
 
@@ -16,6 +25,8 @@ end
 
 def child(*args)
   puts "child: Running #{args.inspect} as PID #{Process.pid}"
+
+  must(LibC.unshare(LibC::CLONE_NEWUTS))
 
   process = ChildProcess.build(*args)
   process.io.inherit!
