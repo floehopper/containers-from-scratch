@@ -42,9 +42,9 @@ end
 def grandchild(*args)
   puts "grandchild: Running #{args.inspect} as PID #{Process.pid}"
 
-  must(LibC.mount('none', '/', '', LibC::MS_REC | LibC::MS_PRIVATE, ''))
+  must(LibC.mount('none', '/', Fiddle::NULL, LibC::MS_REC | LibC::MS_PRIVATE, Fiddle::NULL))
   Dir.chroot('/home/ubuntu/ubuntufs')
-  must(LibC.mount('proc', '/proc', 'proc', 0, ''))
+  must(LibC.mount('proc', '/proc', 'proc', 0, Fiddle::NULL))
 
   begin
     process = ChildProcess.build(*args)
