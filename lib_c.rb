@@ -82,4 +82,10 @@ module LibC
 
   # Ref: http://manpages.ubuntu.com/manpages/xenial/man2/sethostname.2.html
   extern 'int sethostname(const char *name, size_t len)'
+
+  # Ref: http://manpages.ubuntu.com/manpages/xenial/man2/mount.2.html
+  extern 'int mount(const char *source, const char *target, const char *filesystemtype, unsigned long mountflags, const void *data)'
+
+  # Ref: http://manpages.ubuntu.com/manpages/xenial/man2/umount.2.html
+  extern 'int umount(const char *target)'
 end

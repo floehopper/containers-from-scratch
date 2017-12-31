@@ -43,14 +43,19 @@ def grandchild(*args)
   puts "grandchild: Running #{args.inspect} as PID #{Process.pid}"
 
   Dir.chroot('/home/ubuntu/ubuntufs')
+  must(LibC.mount('proc', '/proc', 'proc', 0, ''))
 
-  process = ChildProcess.build(*args)
-  process.io.inherit!
-  process.cwd = '/'
-  process.start
-  process.wait
+  begin
+    process = ChildProcess.build(*args)
+    process.io.inherit!
+    process.cwd = '/'
+    process.start
+    process.wait
 
-  abort "grandchild: exit code #{process.exit_code}" unless process.exit_code == 0
+    abort "grandchild: exit code #{process.exit_code}" unless process.exit_code == 0
+  ensure
+    must(LibC.umount('/proc'))
+  end
 end
 
 args = ARGV
