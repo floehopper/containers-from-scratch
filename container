@@ -5,6 +5,8 @@ require 'childprocess'
 
 require_relative 'lib_c'
 
+HOSTNAME = 'container'.freeze
+
 def must(exit_code)
   unless exit_code == 0
     $stderr.puts caller
@@ -27,6 +29,7 @@ def child(*args)
   puts "child: Running #{args.inspect} as PID #{Process.pid}"
 
   must(LibC.unshare(LibC::CLONE_NEWUTS))
+  must(LibC.sethostname(HOSTNAME, HOSTNAME.length))
 
   process = ChildProcess.build(*args)
   process.io.inherit!
