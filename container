@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'childprocess'
+
+def run(*args)
+  puts "run: Running #{args.inspect} as PID #{Process.pid}"
+
+  process = ChildProcess.build(*args)
+  process.io.inherit!
+  process.start
+  process.wait
+
+  abort "run: exit code #{process.exit_code}" unless process.exit_code == 0
+end
+
+args = ARGV
+type = args.shift
+case type
+when 'run'
+  run(*args)
+else
+  abort "Unknown type: #{type}"
+end
