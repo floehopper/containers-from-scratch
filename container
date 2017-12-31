@@ -28,15 +28,26 @@ end
 def child(*args)
   puts "child: Running #{args.inspect} as PID #{Process.pid}"
 
-  must(LibC.unshare(LibC::CLONE_NEWUTS))
+  must(LibC.unshare(LibC::CLONE_NEWUTS | LibC::CLONE_NEWPID))
   must(LibC.sethostname(HOSTNAME, HOSTNAME.length))
+
+  process = ChildProcess.build(__FILE__, 'grandchild', *args)
+  process.io.inherit!
+  process.start
+  process.wait
+
+  abort "child: exit code #{process.exit_code}" unless process.exit_code == 0
+end
+
+def grandchild(*args)
+  puts "grandchild: Running #{args.inspect} as PID #{Process.pid}"
 
   process = ChildProcess.build(*args)
   process.io.inherit!
   process.start
   process.wait
 
-  abort "child: exit code #{process.exit_code}" unless process.exit_code == 0
+  abort "grandchild: exit code #{process.exit_code}" unless process.exit_code == 0
 end
 
 args = ARGV
@@ -46,6 +57,8 @@ when 'run'
   run(*args)
 when 'child'
   child(*args)
+when 'grandchild'
+  grandchild(*args)
 else
   abort "Unknown type: #{type}"
 end
