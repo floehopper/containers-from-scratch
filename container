@@ -14,6 +14,16 @@ def must(exit_code)
   end
 end
 
+def cg
+  cgroups = Pathname.new('/sys/fs/cgroup/')
+  pids = cgroups.join('pids')
+  FileUtils.mkdir_p(pids.join('james'), mode: 0755)
+  File.write(pids.join('james/pids.max'), '20', perm: 0700)
+  # Removes the new cgroup in place after the container exits
+  File.write(pids.join('james/notify_on_release'), '1', perm: 0700)
+  File.write(pids.join('james/cgroup.procs'), Process.pid.to_s, perm: 0700)
+end
+
 def run(*args)
   puts "run: Running #{args.inspect} as PID #{Process.pid}"
 
@@ -41,6 +51,8 @@ end
 
 def grandchild(*args)
   puts "grandchild: Running #{args.inspect} as PID #{Process.pid}"
+
+  cg
 
   must(LibC.mount('none', '/', Fiddle::NULL, LibC::MS_REC | LibC::MS_PRIVATE, Fiddle::NULL))
   Dir.chroot('/home/ubuntu/ubuntufs')
